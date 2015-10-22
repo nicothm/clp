@@ -1,0 +1,10 @@
+*/*.class
+*/*.*~
+
+out/
+bin/
+.idea
+.project
+.metadata
+
+*.iml
