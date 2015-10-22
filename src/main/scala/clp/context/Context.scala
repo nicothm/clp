@@ -5,7 +5,7 @@ import clp.converters._
 /**
  * The context holds all parsed arguments as List[String].
  * To get a value as another type you need an ListStringConverter in the scope.
- * For the most-used datatypes they are defined and can be imported from [[clp.converters.Convertable._
+ * For the most-used datatypes they are defined and can be imported from [[clp.converters.Convertable]]
  */
 trait Context {
   def get[T : ListStringConverter](key: String): Option[T]

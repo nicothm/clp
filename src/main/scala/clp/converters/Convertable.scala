@@ -1,9 +1,13 @@
 package clp.converters
 
+import scala.annotation.implicitNotFound
+
 trait Convertable[A, B] {
   def convert(elem: B) : A
 }
 
+
+@implicitNotFound("Can't find correct converter for type ${A}\nConsider importing clp.converters.Convertable._ for standard-types!")
 trait ListStringConverter[A] extends Convertable[A, List[String]]
 trait StringConverter[A] extends Convertable[A, String]
 
