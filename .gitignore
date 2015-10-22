@@ -3,6 +3,7 @@
 
 out/
 bin/
+target/
 .idea
 .project
 .metadata
