@@ -15,7 +15,7 @@ object Testi {
   def main(args: Array[String]) {
     val configs = Array[Config](
       "--heapsize" -> Int << "Specify heapsize in bytes",
-      ("--pm" -> RealTy).alias("-p"),
+      ("--pm" -> RealTy).alias("-p").alias("--superP"),
       "--pc" -> Int,
       "-f" -> Boolean << "Force output",
       "--list" -> ListTy(StringTy) << "List of input no",
@@ -24,7 +24,7 @@ object Testi {
       ("-j" -> Flag) required
     )
 
-    val arguments = Array("--list", "blup.txt", "hans.txt", "yeay.txt", "--heapsize", "200", "-p", "5.34", "--pc", "10", "-f", "true",
+    val arguments = Array("--list", "blup.txt", "hans.txt", "yeay.txt", "--heapsize", "blup", "-p", "5.34", "--pc", "10", "-f", "true",
     "--doubles", "4.5", "3.2", "0", "-c"
     )
 

@@ -4,17 +4,52 @@ import config._
 import context._
 
 import scala.annotation.tailrec
-
+import clp.util._
 class Parser(private val map:Map[String, Config]) {
   val definedFlag = "true"
   val notDefined = "false"
 
+  //help-msg strings
+  private lazy val helpColumnSeparator = "    "
+  private lazy val fstColDescr = "Arg"
+  private lazy val secColDescr = "Type"
+  private lazy val thdColDescr = "Required"
+  private lazy val fthColDescr = "Descr"
+
+  /**Create a column with the given argument for the help-text and fill up the rest until maxChars with whitespace.
+   */
+  private def createColumn(v:String, maxChars:Int)(columnSeparator:String) =
+    if(v.length < maxChars) ((0 until maxChars - v.length).foldLeft(v) { case (acc, idx) => acc+" " } + columnSeparator)
+    else v+columnSeparator
+
+  /** Make some craziness for printing a beautiful help text.
+    */
   private def printHelp(): Nothing = {
     println("Usage:")
 
     val distinct = map.groupBy { _._2 } map { case (config, keys) => config -> keys.keys.toList }
 
-    println("\tArgument\tType\tRequired\t\tDescription")
+    //get the maximum-count of chars which is needed in each column
+    val (maxSizeKeyColumn, maxSizeTypeColumn, maxSizeRequColumn, maxSizeDescColumn) =
+      distinct.foldLeft(fstColDescr.length, secColDescr.length, thdColDescr.length, fthColDescr.length)
+        { case ((skC, stC, srC, sdC), (config, keys)) =>
+          (
+            max(skC, keys.mkString(", ").length),
+            max(stC, config.getType().toString.length),
+            max(1, srC),
+            max(sdC, config.description.length)
+            )
+        }
+
+    //print description
+    println(
+      helpColumnSeparator +
+      createColumn(fstColDescr, maxSizeKeyColumn)(helpColumnSeparator) +
+      createColumn(secColDescr, maxSizeTypeColumn)(helpColumnSeparator) +
+      createColumn(thdColDescr, maxSizeRequColumn)(helpColumnSeparator) +
+      fthColDescr
+    )
+
     for {
       (config, keys) <- distinct
       keysString = keys.mkString(", ")
@@ -22,7 +57,13 @@ class Parser(private val map:Map[String, Config]) {
       configDesc = config.description
       required = config.isRequired()
     } {
-      println(s"\t$keysString\t$configTy\t$required\t\t$configDesc")
+      val keyColumn = createColumn(keysString, maxSizeKeyColumn)(helpColumnSeparator)
+      val typeColumn = createColumn(configTy.toString, maxSizeTypeColumn)(helpColumnSeparator)
+      val requColumn = createColumn(if(required) "y" else "n", maxSizeRequColumn)(helpColumnSeparator)
+      val descColumn = configDesc
+
+      //print row
+      println(helpColumnSeparator+keyColumn+typeColumn+requColumn+descColumn)
     }
     sys.exit(0)
   }
